@@ -45,18 +45,18 @@ Router.route('/view1', {
 });
 
 // Route for view2
-Router.route('/view2', {
+Router.route('/trial', {
     template: 'views_view2',
-    name: 'view2'
+    name: 'trial'
 });
 
-// Route for view2
+// Route for view3
 Router.route('/vendor', {
     template: 'views_view3',
     name: 'vendor'
 });
 
-// Route for view2
+// Route for view4
 Router.route('/master', {
     template: 'views_view4',
     name: 'master'
