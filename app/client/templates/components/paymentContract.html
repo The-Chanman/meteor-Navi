@@ -20,7 +20,7 @@
                     <input type="text"
                             id="qualityPayAddress"
                             class="form-control"
-                            placeholder="0xfff7891b9c65a7f55e9c40a73ab79f86be5f8f5c" />
+                            placeholder="0x0783d75bb148c06be4ec02ec36d8bb01448dfb3f" />
                     <br />
                     <button type="button" data-action="findContract" class="btn btn-default btn-deploy">
                         Find Contract!
@@ -42,73 +42,69 @@
                         <span>{{TemplateVar.get 'contractAddr'}}</span>
                     </label>
                     <hr />
-                    <br />
                     <label>
                         Minimum Shipping Cost:   <span>{{TemplateVar.get 'minFee'}} ether</span>
                     </label>
-                    <br />
-
                     <hr />
 
-
-                    <button type="button" data-action="signContract" class="btn btn-default btn-deploy">
+                  <!--   <button type="button" data-action="signContract" class="btn btn-default btn-deploy">
                       Sign Contract! </button>
                       <button type="button" data-action="refreshStatus" class="btn btn-default btn-deploy">
-                        Refresh Status </button>
+                        Refresh Status </button> -->
 
                     {{/if}}
                 {{/with}}
             </div>
         </div>
 
-        <div class="panel panel-default panel-dapp">
+        {{#with TemplateVar.get 'state'}}
+            {{#if contractExists}}
+                <div class="panel panel-default panel-dapp">
 
-            <div class="panel-heading">
-              Box Trip Events...
-            </div>
-            <div class="panel-body">
-                {{#with TemplateVar.get 'state'}}
-                    {{#if contractExists}}
-                    <br />
-                    <style>
-                      table {
-                          font-family: arial, sans-serif;
-                          border-collapse: collapse;
-                          width: 100%;
-                      }
+                    <div class="panel-heading">
+                      Box Trip Events...
+                    </div>
+                    <div class="panel-body" style="word-wrap: break-word">
+                            <br />
+                            <style>
+                              table {
+                                  font-family: arial, sans-serif;
+                                  border-collapse: collapse;
+                                  width: 100%;
+                              }
 
-                      td, th {
-                          border: 1px solid #514441;
-                          text-align: left;
-                          padding: 8px;
-                      }
+                              td, th {
+                                  border: 1px solid #514441;
+                                  text-align: left;
+                                  padding: 8px;
+                              }
 
-                      tr:nth-child(odd) {
-                          background-color: #dddddd;
-                      }
-                      </style>
-                    <table id="payoutTable">
-                      <tr>
-                        <td>Party:</td>
-                        <td>Payout:</td>
-                        <td>Date Stamp:</td>
-                      </tr>
-                    </table>
-                    <br>
-                    <table id="paymentTable">
-                      <tr>
-                        <td>Box ID:</td>
-                        <td>Courier ID:</td>
-                        <td>Disturbance Type:</td>
-                        <td>Status:</td>
-                        <td>Date Stamp:</td>
-                      </tr>
-                    </table>
-                    <br>
-                    {{/if}}
-                {{/with}}
-            </div>
-        </div>
+                              tr:nth-child(odd) {
+                                  background-color: #dddddd;
+                              }
+                              </style>
+                            <table id="payoutTable">
+                              <tr>
+                                <td>Party:</td>
+                                <td>Payout:</td>
+                                <td>Date Stamp:</td>
+                              </tr>
+                            </table>
+                            <br>
+                            <table id="paymentTable">
+                              <tr>
+                                <td>Box ID:</td>
+                                <td>Courier ID:</td>
+                                <td>Disturbance Type:</td>
+                                <td>Status:</td>
+                                <td>Date Stamp:</td>
+                              </tr>
+                            </table>
+                            <br>
+                    </div>
+                </div>
+            {{/if}}
+        {{/with}}
     </div>
     <div class="col-md-3">
         {{#with TemplateVar.get 'state'}}
@@ -117,15 +113,29 @@
                     <div class="panel-heading">
                         Box Details
                     </div>
-                    <div class="panel-body">
-                        <div> Box ID: <strong id='Box ID'>{{TemplateVar.get 'aReceiver'}} </strong> </div>
-                        <div> Bounty: <strong id='Bounty'>{{TemplateVar.get 'aReceiver'}} </strong> </div>
-                        <div> Penalties: <strong id='Penalties'>{{TemplateVar.get 'aReceiver'}} </strong> </div>
-                        <div> Start Time: <strong id='Start Time'>{{TemplateVar.get 'aReceiver'}} </strong> </div>
-                        <div> End Time: <strong id='End Time'>{{TemplateVar.get 'aReceiver'}} </strong> </div>
+                    <div class="panel-body" style="word-wrap: break-word">
+                        <div > Box ID: <strong id='Box ID'>{{TemplateVar.get 'boxID'}} </strong> </div>
+                        <div> Courier ID: <strong id='Courier ID'>{{TemplateVar.get 'courierID'}} </strong> </div>
+                        <div> Sender ID: <strong id='Sender ID'>{{TemplateVar.get 'senderID'}} </strong> </div>
+                        <div> Bounty: <strong id='Bounty'>{{TemplateVar.get 'bounty'}} </strong> Wei </div>
+                        <div> Penalties: <strong id='Penalties'>{{TemplateVar.get 'disturbedDuration'}} </strong> seconds</div>
+                        <div> On Trip: <strong id='On Trip'>{{TemplateVar.get 'onTrip'}} </strong> </div>
                     </div>
                 </div>
             {{/if}}
         {{/with}}
     </div>
+    
+<script src="https://www.gstatic.com/firebasejs/3.2.1/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyCuQDJbFeHCRV9tooWKClXcmKNysiZ1dQ0",
+    authDomain: "smartcontract-render.firebaseapp.com",
+    databaseURL: "https://smartcontract-render.firebaseio.com",
+    storageBucket: "smartcontract-render.appspot.com",
+  };
+  firebase.initializeApp(config);
+</script>
+    
 </template>

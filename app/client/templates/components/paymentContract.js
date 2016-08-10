@@ -1,10 +1,9 @@
-/**
+/*
 Template Controllers
-
 @module Templates
 */
 
-/**
+/*
 The vendor contract template.
 
 @class [template] components_vendorContract
@@ -22,8 +21,10 @@ var disturbedDuration;
 var lastDisturbed;
 var bounty;
 
- var qualitypayContract = web3.eth.contract([{"constant":false,"inputs":[{"name":"disturbType","type":"string"}],"name":"recordBoxFixed","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"_boxID","type":"address"}],"name":"endBox","outputs":[],"type":"function"},{"constant":true,"inputs":[],"name":"commandCenter","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":false,"inputs":[{"name":"bPayout","type":"uint256"},{"name":"cPayout","type":"uint256"},{"name":"_boxID","type":"address"},{"name":"change","type":"uint256"}],"name":"payoutBox","outputs":[],"type":"function"},{"constant":true,"inputs":[],"name":"minShippingCost","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"Boxes","outputs":[{"name":"bounty","type":"uint256"},{"name":"disturbedDuration","type":"uint256"},{"name":"lastDisturbed","type":"uint256"},{"name":"onTrip","type":"bool"},{"name":"currentCourier","type":"address"},{"name":"sender","type":"address"}],"type":"function"},{"constant":false,"inputs":[{"name":"_boxID","type":"address"},{"name":"_currentCourier","type":"address"}],"name":"startBox","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"disturbType","type":"string"}],"name":"recordBoxDisturbed","outputs":[],"type":"function"},{"inputs":[],"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"boxID","type":"address"},{"indexed":true,"name":"courier","type":"address"},{"indexed":false,"name":"disturbType","type":"string"},{"indexed":false,"name":"timestamp","type":"uint256"}],"name":"LogBoxDisturbed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"boxID","type":"address"},{"indexed":true,"name":"courier","type":"address"},{"indexed":false,"name":"disturbType","type":"string"},{"indexed":false,"name":"timestamp","type":"uint256"}],"name":"LogBoxFixed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"boxID","type":"address"},{"indexed":true,"name":"courier","type":"address"},{"indexed":false,"name":"timestamp","type":"uint256"},{"indexed":false,"name":"bounty","type":"uint256"}],"name":"LogStartTrip","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"boxID","type":"address"},{"indexed":true,"name":"courier","type":"address"},{"indexed":false,"name":"timestamp","type":"uint256"}],"name":"LogEndTrip","type":"event"}]);
+var qualitypayContract = web3.eth.contract([{"constant":false,"inputs":[{"name":"disturbType","type":"string"}],"name":"recordBoxFixed","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"_boxID","type":"address"}],"name":"endBox","outputs":[],"type":"function"},{"constant":true,"inputs":[],"name":"commandCenter","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":false,"inputs":[{"name":"bPayout","type":"uint256"},{"name":"cPayout","type":"uint256"},{"name":"_boxID","type":"address"},{"name":"change","type":"uint256"}],"name":"payoutBox","outputs":[],"type":"function"},{"constant":true,"inputs":[],"name":"minShippingCost","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"Boxes","outputs":[{"name":"bounty","type":"uint256"},{"name":"disturbedDuration","type":"uint256"},{"name":"lastDisturbed","type":"uint256"},{"name":"onTrip","type":"bool"},{"name":"currentCourier","type":"address"},{"name":"sender","type":"address"}],"type":"function"},{"constant":false,"inputs":[{"name":"_boxID","type":"address"},{"name":"_currentCourier","type":"address"}],"name":"startBox","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"disturbType","type":"string"}],"name":"recordBoxDisturbed","outputs":[],"type":"function"},{"inputs":[],"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"boxID","type":"address"},{"indexed":true,"name":"courier","type":"address"},{"indexed":false,"name":"disturbType","type":"string"},{"indexed":false,"name":"timestamp","type":"uint256"}],"name":"LogBoxDisturbed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"boxID","type":"address"},{"indexed":true,"name":"courier","type":"address"},{"indexed":false,"name":"disturbType","type":"string"},{"indexed":false,"name":"timestamp","type":"uint256"}],"name":"LogBoxFixed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"boxID","type":"address"},{"indexed":true,"name":"courier","type":"address"},{"indexed":false,"name":"timestamp","type":"uint256"},{"indexed":false,"name":"bounty","type":"uint256"}],"name":"LogStartTrip","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"boxID","type":"address"},{"indexed":true,"name":"courier","type":"address"},{"indexed":false,"name":"timestamp","type":"uint256"}],"name":"LogEndTrip","type":"event"}]);
 
+
+    
 function getIsValid(abool){
   if (abool)
   return "valid";
@@ -58,7 +59,7 @@ function addToPayoutTable(party, payout, datestamp) {
     var cell2 = row.insertCell(1);
     var cell3 = row.insertCell(2);
     cell1.innerHTML = party;
-    cell2.innerHTML = payout;
+    cell2.innerHTML = web3.fromWei(payout);
     cell3.innerHTML = Helpers.formatTime(datestamp,"YYYY-MM-DD hh:mm");
 }
 function addToEventTable(boxID, courierID, disturptionType, status, datestamp) {
@@ -80,7 +81,7 @@ function addToEventTable(boxID, courierID, disturptionType, status, datestamp) {
 }
 
 function qualityPayListener(myContract){
-  var onTrip = false;
+
   var disturbed = false;
   // var startTime;
   // var disturbedDuration = 0;
@@ -90,16 +91,15 @@ function qualityPayListener(myContract){
 
   console.log("Starting contract Listeners");
 
-  var StartingTrip = qualityPay.LogStartTrip();
+  var StartingTrip = myContract.LogStartTrip();
   StartingTrip.watch(function(error, result){
       if (!error){
-        if(onTrip){
+        if(boxData[3]){
           console.log("Already on a Trip");
         } else {
           console.log("*********************************************************************************");
           console.log("Box " + result.args.boxID + " is starting trip with courier " + result.args.courier + " at "+ timeConverter(result.args.timestamp) +"!");
           console.log("*********************************************************************************");
-          onTrip = true;
           startTime = result.args.timestamp;
           bounty = result.args.bounty;
           disturbedDuration = 0;
@@ -110,9 +110,12 @@ function qualityPayListener(myContract){
       }
   });
 
-  var BoxDisturbed = qualityPay.LogBoxDisturbed();
+  var BoxDisturbed = myContract.LogBoxDisturbed();
   BoxDisturbed.watch(function(error, result){
-      if (!error && onTrip){
+      if (!error && boxData[3]){
+        if(disturbedDuration === undefined){
+          disturbedDuration = 0;
+        }
         console.log("*********************************************************************************");
         console.log("Box " + result.args.boxID + " with courier " + result.args.courier + " at "+ timeConverter(result.args.timestamp) +" has been disturbed with " + result.args.disturbType + "!");
         console.log("*********************************************************************************");
@@ -125,11 +128,11 @@ function qualityPayListener(myContract){
       }
   });
 
-  var BoxFixed = qualityPay.LogBoxFixed();
+  var BoxFixed = myContract.LogBoxFixed();
   BoxFixed.watch(function(error, result){
-    console.log(error + " " + onTrip + " " + disturbed);
+    console.log(error + " " + boxData[3] + " " + disturbed);
       if (!error){
-        if (onTrip){
+        if (boxData[3]){
           if (disturbed){
             disturbedDuration += result.args.timestamp - lastDisturbed;
             console.log("*********************************************************************************");
@@ -151,15 +154,15 @@ function qualityPayListener(myContract){
       }
   });
 
-  var EndingTrip = qualityPay.LogEndTrip();
+  var EndingTrip = myContract.LogEndTrip();
   EndingTrip.watch(function(error, result){
-      if (!error && onTrip){
+      if (!error && boxData[3]){
         if(disturbed){
           disturbedDuration += result.args.timestamp - lastDisturbed;
         }
 
         var disturbedCost = disturbedDuration * 1000000000000000;
-        var payout = bounty - disturbedCost;
+        var payout = boxData[0] - disturbedCost;
         var bPayout = .1 * payout;
         var cPayout = .9 * payout;
         console.log("*********************************************************************************");
@@ -170,14 +173,14 @@ function qualityPayListener(myContract){
         console.log("So " + web3.fromWei(bPayout) + " goes to the box to cover transaction fees, refunds, maintenance. " + web3.fromWei(cPayout) + " goes to the courier.");
         console.log("*********************************************************************************");
         // payout to the courier 
-        // estimatedGasCost = eth.estimateGas({from:eth.coinbase,to:qualitypay.address,data:qualitypay.payoutBox.getData(payout,eth.accounts[1])});
+        // estimatedGasCost = eth.estimateGas({from:eth.coinbase,to:myContract.address,data:myContract.payoutBox.getData(payout,eth.accounts[1])});
         addToPayoutTable("Change to Sender", disturbedCost, result.args.timestamp);
         addToPayoutTable("Payout to Courier", cPayout, result.args.timestamp);
         addToPayoutTable("Payout to Box", bPayout, result.args.timestamp);
         
-        qualityPay.payoutBox(bPayout, cPayout, result.args.boxID, disturbedCost, {from: eth.coinbase, gas: 3423232});
+        myContract.payoutBox(bPayout, cPayout, result.args.boxID, disturbedCost, {from: "0x334f5742b9ee85e4e1755ebaea071560e7033ae8", gas: 3423232});
         disturbedDuration = 0;
-        onTrip = false;
+        boxData[3] = false;
         disturbed = false;
       }
       else {
@@ -197,7 +200,7 @@ Template['components_paymentContract'].onRendered(function(){
 
 Template['components_paymentContract'].helpers({
 
-	/**
+	/*
 	Get multiply contract source code.
 
 	@method (source)
@@ -210,7 +213,7 @@ Template['components_paymentContract'].helpers({
 
 Template['components_paymentContract'].events({
 
-	/**
+	/*
 	On "Create New Contract" click
 
 	@event (click .btn-default)
@@ -232,8 +235,15 @@ Template['components_paymentContract'].events({
               console.log("Error when calling for minShippingCost");
         });
 
-        boxData = contractInstance.Boxes(eth.accounts[1]);
-        TemplateVar.set(template, 'boxInfo', boxInfo);
+        boxData = contractInstance.Boxes('0x0171d54c207ccf841352f3ea6c1f07750ee8cdec');
+        TemplateVar.set(template, 'boxInfo', boxData);
+        TemplateVar.set(template, 'boxID', '0x0171d54c207ccf841352f3ea6c1f07750ee8cdec');
+        TemplateVar.set(template, 'bounty', boxData[0]);
+        TemplateVar.set(template, 'disturbedDuration', boxData[1]);
+        TemplateVar.set(template, 'lastDisturbed', boxData[2]);
+        TemplateVar.set(template, 'onTrip', boxData[3]);
+        TemplateVar.set(template, 'courierID', boxData[4]);
+        TemplateVar.set(template, 'senderID', boxData[5]);
 
         qualityPayListener(contractInstance);
 
@@ -241,51 +251,4 @@ Template['components_paymentContract'].events({
 
         console.log("Found contract at: " + contractAddr);
   },
-
-
-
-  // "click [data-action='signContract']": function(event, template){
-  //       TemplateVar.set('state', {contractExists: true});
-
-  //       console.log("Found contract at: " + contractAddr);
-
-  //       contractInstance = qualitypayContract.at(contractAddr);
-
-  //       contractInstance.signContract.sendTransaction({from:web3.eth.accounts[2],value:web3.toWei(minFee),gas:4000000},function(err, result){
-  //           if(err)
-  //             console.log("Error when calling for fee");
-  //       });
-  // },
-
-  // "click [data-action='refreshStatus']": function(event, template){
-
-  //       contractInstance = qualitypayContract.at(contractAddr);
-  //       contractInstance.cycleEndDate.call(function(err, result){
-  //         theContractEndDate=result;
-  //           latestTime = web3.eth.getBlock('latest').timestamp;
-  //           if (result > latestTime){
-  //             aCycleEndDate=Helpers.formatTime(result,"YYYY-MM-DD hh:mm:ss");
-  //           } else {
-  //             aCycleEndDate="N/A";
-  //           }
-  //           document.getElementById('conEnd').innerHTML = aCycleEndDate;
-  //           console.log("CYCLE END DATE" + aCycleEndDate);
-
-  //           if(err)
-  //             console.log("Error when calling for fee");
-  //       });
-
-  //       contractInstance.isSigned.call(function(err, result){
-  //         if (theContractEndDate > latestTime){
-  //           isValid=getIsValid(result);
-  //         } else {
-  //           isValid="Not valid";
-  //         }
-  //         document.getElementById('conState').innerHTML = isValid;
-
-  //         if(err)
-  //           console.log("Error when calling for fee");
-  //       });
-
-  // },
 });
