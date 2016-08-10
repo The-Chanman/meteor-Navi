@@ -16,6 +16,8 @@ var contractAddr;
 var minFee;
 var boxData;
 
+
+
 var startTime;
 var disturbedDuration;
 var lastDisturbed;
@@ -133,7 +135,9 @@ function qualityPayListener(myContract){
       if (!error){
         if (boxData[3]){
           if (disturbed){
+            var penalty = firebase.database().ref('penalty');
             disturbedDuration += result.args.timestamp - lastDisturbed;
+            penalty.set(disturbedDuration);
             console.log("*********************************************************************************");
             console.log("Box " + result.args.boxID + " with courier " + result.args.courier + " at "+ timeConverter(result.args.timestamp) +" has been fixed!");
             console.log("Box has been disturbed for a total of " + disturbedDuration + " seconds on this trip.");
@@ -219,6 +223,7 @@ Template['components_paymentContract'].events({
 	*/
 
   "click [data-action='findContract']": function(event, template){
+
         TemplateVar.set('state', {contractExists: true});
 
         contractAddr = template.find("#qualityPayAddress").value;
@@ -233,7 +238,6 @@ Template['components_paymentContract'].events({
             if(err)
               console.log("Error when calling for minShippingCost");
         });
-
         boxData = contractInstance.Boxes('0x0171d54c207ccf841352f3ea6c1f07750ee8cdec');
         TemplateVar.set(template, 'boxInfo', boxData);
         TemplateVar.set(template, 'boxID', '0x0171d54c207ccf841352f3ea6c1f07750ee8cdec');
