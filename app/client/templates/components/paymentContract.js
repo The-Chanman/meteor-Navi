@@ -141,7 +141,7 @@ function qualityPayListener(myContract){
             penalty.set(disturbedDuration);
             console.log("*********************************************************************************");
             console.log("Box " + result.args.boxID + " with courier " + result.args.courier + " at "+ timeConverter(result.args.timestamp) +" has been fixed!");
-            console.log("Box has been disturbed for a total of " + disturbedDuration + " seconds on this trip.");3
+            console.log("Box has been disturbed for a total of " + disturbedDuration + " seconds on this trip.");
             console.log("*********************************************************************************");
             document.getElementById('Penalties').innerHTML = disturbedDuration;
             disturbed = false;
@@ -163,6 +163,8 @@ function qualityPayListener(myContract){
       if (!error && boxData[3]){
         if(disturbed){
           disturbedDuration += result.args.timestamp - lastDisturbed;
+          var penalty = firebase.database().ref('penalty');
+          penalty.set(disturbedDuration);
         }
 
         var disturbedCost = disturbedDuration * 1000000000000000;
